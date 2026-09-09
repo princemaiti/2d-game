@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Last Ember</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="loadingScreen" class="screen active">
+      <div class="loading-panel">
+        <div class="game-logo">THE LAST EMBER</div>
+        <div class="loading-bar">
+          <div id="loadingBar" class="loading-bar-fill"></div>
+        </div>
+        <div id="loadingPercent">0%</div>
+        <div id="loadingTip">Some memories are better left forgotten.</div>
+      </div>
+    </div>
+
+    <div id="menuScreen" class="screen hidden">
+      <div class="menu-backdrop"></div>
+      <div class="menu-panel">
+        <div class="menu-title">The Last Ember</div>
+        <div class="menu-buttons">
+          <button id="continueBtn">Continue</button>
+          <button id="newGameBtn">New Game</button>
+          <button id="loadGameBtn">Load Game</button>
+          <button id="settingsBtn">Settings</button>
+          <button id="creditsBtn">Credits</button>
+          <button id="quitBtn">Quit</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameRoot" class="game-root hidden">
+      <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+      <div id="hud" class="hud">
+        <div id="hudLeft" class="hud-block left">
+          <div class="portrait-wrap">
+            <div class="portrait">A</div>
+          </div>
+          <div class="bars">
+            <div class="bar-row">
+              <span>HP</span>
+              <div class="bar-track"><div id="healthBar" class="bar-fill health"></div></div>
+            </div>
+            <div class="bar-row">
+              <span>ST</span>
+              <div class="bar-track"><div id="staminaBar" class="bar-fill stamina"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="hudRight" class="hud-block right">
+          <div id="currentMission">Mission: The Elder's Warning</div>
+          <div id="currentObjective">Objective: Speak to Elder Rowan</div>
+        </div>
+
+        <div id="bottomRightHint" class="bottom-right">WASD Move • Space Jump • E Interact • Click Attack</div>
+        <div id="notificationBox" class="notification-box">Welcome to Stoneford.</div>
+      </div>
+
+      <div id="dialogueBox" class="panel hidden">
+        <div id="dialogueName" class="dialogue-name">Elder Rowan</div>
+        <div id="dialogueText" class="dialogue-text">The forest is troubled.</div>
+        <div id="dialogueChoices" class="dialogue-choices"></div>
+        <button id="dialogueContinueBtn" class="primary-btn">Continue</button>
+      </div>
+
+      <div id="pauseMenu" class="panel hidden">
+        <div class="panel-title">Paused</div>
+        <button data-menu-action="resume">Resume</button>
+        <button data-menu-action="map">Map</button>
+        <button data-menu-action="missions">Missions</button>
+        <button data-menu-action="inventory">Inventory</button>
+        <button data-menu-action="settings">Settings</button>
+        <button data-menu-action="save">Save Game</button>
+        <button data-menu-action="mainMenu">Main Menu</button>
+      </div>
+
+      <div id="mapOverlay" class="panel hidden map-overlay">
+        <div class="panel-title">World Map</div>
+        <div class="map-grid">
+          <div class="map-node village active">Stoneford</div>
+          <div class="map-node forest">Forest</div>
+          <div class="map-node lake">Lake</div>
+          <div class="map-node ruins">Ruins</div>
+          <div class="map-node mine">Mine</div>
+          <div class="map-node tower">Tower</div>
+          <div class="map-node mountain">Mountain</div>
+          <div class="map-node final">Final Ruins</div>
+        </div>
+      </div>
+
+      <div id="inventoryOverlay" class="panel hidden inventory-overlay">
+        <div class="panel-title">Inventory</div>
+        <div class="inventory-list">
+          <div class="inventory-item"><span>Health Potion</span><span>2</span></div>
+          <div class="inventory-item"><span>Stamina Potion</span><span>1</span></div>
+          <div class="inventory-item"><span>Coins</span><span>40</span></div>
+          <div class="inventory-item"><span>Ancient Relic</span><span>0</span></div>
+        </div>
+      </div>
+
+      <div id="settingsPanel" class="panel hidden settings-panel">
+        <div class="panel-title">Settings</div>
+        <label>Master Volume <input id="masterVolume" type="range" min="0" max="100" value="75" /></label>
+        <label>Music Volume <input id="musicVolume" type="range" min="0" max="100" value="60" /></label>
+        <label>SFX Volume <input id="sfxVolume" type="range" min="0" max="100" value="80" /></label>
+        <label>Text Speed <input id="textSpeed" type="range" min="1" max="100" value="60" /></label>
+        <label><input id="screenShakeToggle" type="checkbox" checked /> Screen Shake</label>
+        <label><input id="fullscreenToggle" type="checkbox" /> Fullscreen</label>
+        <button id="settingsCloseBtn" class="primary-btn">Close</button>
+      </div>
+
+      <div id="missionPanel" class="panel hidden mission-panel">
+        <div class="panel-title">Quests</div>
+        <div id="missionList"></div>
+      </div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
