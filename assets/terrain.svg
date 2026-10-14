@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <pattern id="grass" width="128" height="128" patternUnits="userSpaceOnUse">
+      <rect width="128" height="128" fill="#315f4b"/>
+      <path d="M12 44l8-15m4 18l8-12M72 96l8-16m4 20l8-12M108 34l8-13" stroke="#6fa36a" stroke-width="3" stroke-linecap="round" opacity=".42"/>
+      <path d="M42 10c8 11 9 20 2 29M92 58c8 10 8 18 2 26" fill="none" stroke="#244b3e" stroke-width="5" opacity=".55"/>
+      <circle cx="26" cy="92" r="4" fill="#d1a85a" opacity=".45"/><circle cx="113" cy="112" r="3" fill="#d1a85a" opacity=".42"/>
+    </pattern>
+  </defs>
+  <rect width="512" height="512" fill="url(#grass)"/>
+  <path d="M0 370c90-45 158 36 242-18s165-28 270-78v238H0Z" fill="#234c42" opacity=".32"/>
+  <path d="M0 370c90-45 158 36 242-18s165-28 270-78" fill="none" stroke="#a8d08d" stroke-width="8" opacity=".22"/>
+</svg>

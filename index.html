@@ -21,7 +21,9 @@
     <div id="menuScreen" class="screen hidden">
       <div class="menu-backdrop"></div>
       <div class="menu-panel">
+        <div class="menu-kicker">A Lost Memory Awakens</div>
         <div class="menu-title">The Last Ember</div>
+        <div class="menu-subtitle">A story of memory, fire, and the truth buried beneath the forest.</div>
         <div class="menu-buttons">
           <button id="continueBtn">Continue</button>
           <button id="newGameBtn">New Game</button>
@@ -32,6 +34,24 @@
         </div>
       </div>
     </div>
+
+      <div id="creditsPanel" class="panel hidden credits-panel">
+        <div class="panel-title">Credits</div>
+        <p>The Last Ember</p>
+        <p>A small indie adventure built with HTML, CSS, and JavaScript.</p>
+        <button id="creditsCloseBtn" class="primary-btn">Close</button>
+      </div>
+
+      <div id="settingsPanel" class="panel hidden settings-panel">
+        <div class="panel-title">Settings</div>
+        <label>Master Volume <input id="masterVolume" type="range" min="0" max="100" value="75" /></label>
+        <label>Music Volume <input id="musicVolume" type="range" min="0" max="100" value="60" /></label>
+        <label>SFX Volume <input id="sfxVolume" type="range" min="0" max="100" value="80" /></label>
+        <label>Text Speed <input id="textSpeed" type="range" min="1" max="100" value="60" /></label>
+        <label><input id="screenShakeToggle" type="checkbox" checked /> Screen Shake</label>
+        <label><input id="fullscreenToggle" type="checkbox" /> Fullscreen</label>
+        <button id="settingsCloseBtn" class="primary-btn">Close</button>
+      </div>
 
     <div id="gameRoot" class="game-root hidden">
       <canvas id="gameCanvas" width="1280" height="720"></canvas>
@@ -58,7 +78,7 @@
           <div id="currentObjective">Objective: Speak to Elder Rowan</div>
         </div>
 
-        <div id="bottomRightHint" class="bottom-right">WASD Move • Space Jump • E Interact • Click Attack</div>
+        <div id="bottomRightHint" class="bottom-right">WASD / Arrows Move • Shift Run • E Interact • Click Attack</div>
         <div id="notificationBox" class="notification-box">Welcome to Stoneford.</div>
       </div>
 
@@ -81,16 +101,76 @@
       </div>
 
       <div id="mapOverlay" class="panel hidden map-overlay">
-        <div class="panel-title">World Map</div>
-        <div class="map-grid">
-          <div class="map-node village active">Stoneford</div>
-          <div class="map-node forest">Forest</div>
-          <div class="map-node lake">Lake</div>
-          <div class="map-node ruins">Ruins</div>
-          <div class="map-node mine">Mine</div>
-          <div class="map-node tower">Tower</div>
-          <div class="map-node mountain">Mountain</div>
-          <div class="map-node final">Final Ruins</div>
+        <div class="map-header">
+          <div class="panel-title">World Map</div>
+          <div class="map-legend">
+            <span class="legend-item"><span class="legend-dot legend-active"></span>Current</span>
+            <span class="legend-item"><span class="legend-dot legend-visited"></span>Visited</span>
+          </div>
+          <button id="mapCloseBtn" class="map-close-btn" aria-label="Close map">Close</button>
+        </div>
+
+        <div id="mapStatus" class="map-status"></div>
+
+        <div class="map-surface">
+          <div class="map-mountain map-mountain-left"></div>
+          <div class="map-mountain map-mountain-right"></div>
+          <div class="map-forest map-forest-left"></div>
+          <div class="map-forest map-forest-right"></div>
+          <div class="map-lake"></div>
+          <div class="map-river"></div>
+          <div class="map-road road-main"></div>
+          <div class="map-road road-side"></div>
+          <div class="map-road road-bridge"></div>
+
+          <div class="map-location stoneford active">
+            <span class="location-pin"></span>
+            <span class="location-label">Stoneford</span>
+          </div>
+          <div class="map-location forest">
+            <span class="location-pin"></span>
+            <span class="location-label">Forest</span>
+          </div>
+          <div class="map-location marsh">
+            <span class="location-pin"></span>
+            <span class="location-label">Blackroot Marsh</span>
+          </div>
+          <div class="map-location highlands">
+            <span class="location-pin"></span>
+            <span class="location-label">Ashen Highlands</span>
+          </div>
+          <div class="map-location lake">
+            <span class="location-pin"></span>
+            <span class="location-label">Lake</span>
+          </div>
+          <div class="map-location ruins">
+            <span class="location-pin"></span>
+            <span class="location-label">Ruins</span>
+          </div>
+          <div class="map-location mine">
+            <span class="location-pin"></span>
+            <span class="location-label">Mine</span>
+          </div>
+          <div class="map-location tower">
+            <span class="location-pin"></span>
+            <span class="location-label">Tower</span>
+          </div>
+          <div class="map-location mountain">
+            <span class="location-pin"></span>
+            <span class="location-label">Mountain</span>
+          </div>
+          <div class="map-location final">
+            <span class="location-pin"></span>
+            <span class="location-label">Final Ruins</span>
+          </div>
+          <div id="playerMapMarker" class="player-map-marker" aria-label="Player location">
+            <span class="player-marker-dot"></span>
+            <span>You</span>
+          </div>
+          <div id="missionMapMarker" class="mission-map-marker" aria-label="Current mission destination">
+            <span class="mission-marker-icon">!</span>
+            <span>Objective</span>
+          </div>
         </div>
       </div>
 
@@ -102,22 +182,13 @@
           <div class="inventory-item"><span>Coins</span><span>40</span></div>
           <div class="inventory-item"><span>Ancient Relic</span><span>0</span></div>
         </div>
-      </div>
-
-      <div id="settingsPanel" class="panel hidden settings-panel">
-        <div class="panel-title">Settings</div>
-        <label>Master Volume <input id="masterVolume" type="range" min="0" max="100" value="75" /></label>
-        <label>Music Volume <input id="musicVolume" type="range" min="0" max="100" value="60" /></label>
-        <label>SFX Volume <input id="sfxVolume" type="range" min="0" max="100" value="80" /></label>
-        <label>Text Speed <input id="textSpeed" type="range" min="1" max="100" value="60" /></label>
-        <label><input id="screenShakeToggle" type="checkbox" checked /> Screen Shake</label>
-        <label><input id="fullscreenToggle" type="checkbox" /> Fullscreen</label>
-        <button id="settingsCloseBtn" class="primary-btn">Close</button>
+        <button id="inventoryCloseBtn" class="primary-btn">Close</button>
       </div>
 
       <div id="missionPanel" class="panel hidden mission-panel">
         <div class="panel-title">Quests</div>
         <div id="missionList"></div>
+        <button id="missionCloseBtn" class="primary-btn">Close</button>
       </div>
     </div>
 

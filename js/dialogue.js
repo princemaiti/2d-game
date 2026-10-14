@@ -12,12 +12,17 @@ export class DialogueSystem {
 
     const dialogueData = this.getDialogue(npc, state);
     this.dialogue = { npc, ...dialogueData };
-    this.render();
-    this.game.ui.showDialogue(this.dialogue);
+    this.game.renderDialogue(npc.name, this.dialogue.text, this.dialogue.choices);
   }
 
   getDialogue(npc, state) {
     if (npc.id === 'elder') {
+      if (this.game.quests.currentMissionId === 2) {
+        return {
+          text: 'You made it back. The forest is quiet for now, but the Ember has awakened beneath the old ruins. This is only the beginning.',
+          choices: ['I have news from the forest.', 'I need a moment.']
+        };
+      }
       if (!state.missionStarted) {
         return {
           text: 'The forest is restless. A strange light has returned, and something in the Ember still walks beneath the trees. I need you to investigate the edge of the forest and find out what is going on.',
@@ -32,7 +37,7 @@ export class DialogueSystem {
         text: 'The forest is not safe. If you see the old signposts, follow the path north and drive the creatures away. Return when the danger is handled.',
         choices: [
           'I understand.',
-          'I will return.'
+          'I will help.'
         ]
       };
     }
@@ -67,7 +72,7 @@ export class DialogueSystem {
       this.game.processDialogueChoice(this.dialogue.choices[0]);
     }
 
-    this.game.ui.hideDialogue();
+    this.game.continueDialogue();
     this.dialogue = null;
   }
 }

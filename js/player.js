@@ -12,6 +12,7 @@ export class Player {
     this.gravity = 1200;
     this.onGround = false;
     this.facing = 1;
+    this.direction = { x: 1, y: 0 };
     this.health = 100;
     this.maxHealth = 100;
     this.stamina = 100;
@@ -20,6 +21,8 @@ export class Player {
     this.attackSwing = 0;
     this.jumpBuffer = 0;
     this.isAttacking = false;
+    this.sprite = new Image();
+    this.sprite.src = './assets/player.svg';
     this.isRunning = false;
     this.inventory = {
       healthPotion: 2,
@@ -40,54 +43,40 @@ export class Player {
     this.attackCooldown = 0;
     this.attackSwing = 0;
     this.isAttacking = false;
+    this.direction = { x: 1, y: 0 };
   }
 
   update(dt, input, world) {
     const moveX = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const moveY = (input.down ? 1 : 0) - (input.up ? 1 : 0);
     const running = input.run && this.stamina > 0;
     this.isRunning = running;
 
-    if (moveX !== 0) {
-      this.facing = moveX;
+    const length = Math.hypot(moveX, moveY) || 1;
+    const normalizedX = moveX / length;
+    const normalizedY = moveY / length;
+    if (moveX !== 0 || moveY !== 0) {
+      this.direction = { x: normalizedX, y: normalizedY };
+      if (moveX !== 0) this.facing = Math.sign(moveX);
     }
 
     const targetSpeed = running ? this.runSpeed : this.speed;
     this.vx = moveX * targetSpeed;
 
-    if (input.jump && this.onGround) {
-      this.vy = -this.jumpForce;
-      this.onGround = false;
-    }
-
     if (this.attackCooldown > 0) this.attackCooldown -= dt;
     if (this.attackSwing > 0) this.attackSwing -= dt;
     this.isAttacking = this.attackSwing > 0;
 
-    if (running && moveX !== 0) {
+    if (running && (moveX !== 0 || moveY !== 0)) {
       this.stamina = Math.max(0, this.stamina - 25 * dt);
     } else {
       this.stamina = Math.min(this.maxStamina, this.stamina + 18 * dt);
     }
 
-    this.vy += this.gravity * dt;
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
-
-    const groundY = world.groundY ?? 620;
-    if (this.y + this.height >= groundY) {
-      this.y = groundY - this.height;
-      this.vy = 0;
-      this.onGround = true;
-    } else {
-      this.onGround = false;
-    }
-
-    if (this.x < 40) this.x = 40;
-    if (this.x > world.width - 60) this.x = world.width - 60;
-
-    if (this.y > world.height + 200) {
-      this.health = 0;
-    }
+    this.x += normalizedX * targetSpeed * dt;
+    this.y += normalizedY * targetSpeed * dt;
+    this.x = Math.max(40, Math.min(this.x, world.width - this.width - 40));
+    this.y = Math.max(40, Math.min(this.y, world.height - this.height - 40));
   }
 
   attack(enemies, game) {
@@ -97,14 +86,15 @@ export class Player {
     this.isAttacking = true;
 
     const range = 70;
-    const attackX = this.x + this.facing * 42;
+    const attackX = this.x + this.direction.x * 42;
+    const attackY = this.y + this.direction.y * 42;
 
     for (const enemy of enemies) {
       if (!enemy.alive) continue;
       const dx = enemy.x - attackX;
-      const dy = Math.abs(enemy.y - this.y);
-      if (Math.abs(dx) <= range && dy < 60) {
-        enemy.takeDamage(18, this.facing);
+      const dy = enemy.y - attackY;
+      if (Math.hypot(dx, dy) <= range) {
+        enemy.takeDamage(18, this.direction.x || this.facing);
         game.showNotification(`Hit ${enemy.name}!`);
         if (!enemy.alive) {
           game.addXp?.(enemy.reward || 10);
@@ -113,29 +103,40 @@ export class Player {
     }
   }
 
-  draw(ctx, cameraX) {
+  draw(ctx, cameraX, cameraY) {
     const screenX = this.x - cameraX;
+    const screenY = this.y - cameraY;
     const color = '#f1c27d';
+    if (this.sprite.complete && this.sprite.naturalWidth > 0) {
+      ctx.drawImage(this.sprite, screenX - 48, screenY - 44, 138, 160);
+    } else {
+    ctx.fillStyle = 'rgba(2, 6, 23, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(screenX + this.width / 2, screenY + this.height - 2, 20, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.fillStyle = '#1a2333';
-    ctx.fillRect(screenX, this.y, this.width, this.height);
+    ctx.beginPath();
+    ctx.arc(screenX + this.width / 2, screenY + this.height / 2, 18, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.fillStyle = color;
-    ctx.fillRect(screenX + 5, this.y + 6, this.width - 10, this.height - 12);
-
-    if (this.facing < 0) {
-      ctx.fillStyle = '#0c1220';
-      ctx.fillRect(screenX + 4, this.y + 18, 7, 7);
-      ctx.fillRect(screenX + 19, this.y + 18, 7, 7);
-    } else {
-      ctx.fillStyle = '#0c1220';
-      ctx.fillRect(screenX + 19, this.y + 18, 7, 7);
-      ctx.fillRect(screenX + 4, this.y + 18, 7, 7);
+    ctx.beginPath();
+    ctx.arc(screenX + this.width / 2, screenY + this.height / 2 - 3, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0c1220';
+    ctx.beginPath();
+    ctx.arc(screenX + this.width / 2 + this.direction.x * 8, screenY + this.height / 2 - 6 + this.direction.y * 8, 3, 0, Math.PI * 2);
+    ctx.fill();
     }
 
     if (this.isAttacking) {
       ctx.fillStyle = 'rgba(255, 200, 120, 0.4)';
-      const swingX = this.x + this.facing * 48 - cameraX;
-      ctx.fillRect(swingX, this.y + 10, 28, 28);
+      const swingX = screenX + this.width / 2 + this.direction.x * 42;
+      const swingY = screenY + this.height / 2 + this.direction.y * 42;
+      ctx.beginPath();
+      ctx.arc(swingX, swingY, 16, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 }
